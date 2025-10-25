@@ -10,26 +10,69 @@ app.use(cors({origin: URL}))
 const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: URL });
 
+// Server-side room storage
+const roomCanvases = new Map();
+
 io.on("connection", (socket) => {
     console.log("Socket.io Server connected");
+    
+    socket.on('joinRoom', (roomId) => {
+        socket.join(roomId);
+        console.log(`User joined room: ${roomId}`);
+        
+        // Send existing canvas to new user
+        if (roomCanvases.has(roomId)) {
+            socket.emit('loadCanvas', roomCanvases.get(roomId));
+        }
+    });
+    
+    // Save canvas state when stroke completes
+    socket.on('saveCanvas', (data) => {
+        const { roomId, canvasData } = data;
+        roomCanvases.set(roomId, canvasData);
+    });
+    
     socket.on('beginPath', (arg)=>{
-        socket.broadcast.emit('beginPath', arg);
+        if (arg.roomId) {
+            socket.to(arg.roomId).emit('beginPath', arg);
+        } else {
+            socket.broadcast.emit('beginPath', arg);
+        }
     });
     socket.on('drawLine', (arg)=>{
-        socket.broadcast.emit('drawLine', arg);
+        if (arg.roomId) {
+            socket.to(arg.roomId).emit('drawLine', arg);
+        } else {
+            socket.broadcast.emit('drawLine', arg);
+        }
     });
     socket.on('changeConfig', (arg)=>{
-        socket.broadcast.emit('changeConfig', arg);
+        if (arg.roomId) {
+            socket.to(arg.roomId).emit('changeConfig', arg);
+        } else {
+            socket.broadcast.emit('changeConfig', arg);
+        }
     });    
     socket.on('menuClick', (arg)=>{
-        socket.broadcast.emit('menuClick', arg);
+        if (arg.roomId) {
+            socket.to(arg.roomId).emit('menuClick', arg);
+        } else {
+            socket.broadcast.emit('menuClick', arg);
+        }
     });
     socket.on('undoClick', (arg) => {
-        socket.broadcast.emit('undoClick', (arg));
+        if (arg.roomId) {
+            socket.to(arg.roomId).emit('undoClick', arg);
+        } else {
+            socket.broadcast.emit('undoClick', arg);
+        }
     });
     socket.on('redoClick', (arg) => {
-        // Broadcast the event to all connected clients, excluding the sender
-        socket.broadcast.emit('redoClick', (arg));
+        if (arg.roomId) {
+            socket.to(arg.roomId).emit('redoClick', arg);
+        } else {
+            socket.broadcast.emit('redoClick', arg);
+        }
     });
 });
 
