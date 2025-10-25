@@ -2,6 +2,12 @@
 
 Real-time collaborative drawing server built with Node.js, Express, and Socket.IO.
 
+## 🚀 Live Demo
+
+**Try the app:** [https://doodle-app-gold.vercel.app](https://doodle-app-gold.vercel.app)
+
+---
+
 ## Features
 
 - **Real-time Collaboration**: Multiple users can draw simultaneously
