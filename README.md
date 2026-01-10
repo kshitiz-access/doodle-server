@@ -33,13 +33,30 @@ npm install
 # Start development server
 npm run dev
 
-# Server runs on http://localhost:5000
+# Start production server
+npm start
+
+# Server runs on http://localhost:5000 (or PORT from environment)
 ```
 
-## Environment
+## Environment Variables
 
-- **Development**: Accepts connections from `http://localhost:3000`
-- **Production**: Configured for deployment on Railway/Render
+Create a `.env` file in the root directory:
+
+```bash
+# Server port (Render sets this automatically)
+PORT=5000
+
+# Frontend URL for CORS (your Vercel frontend URL in production)
+CLIENT_URL=http://localhost:3000
+
+# Environment
+NODE_ENV=development
+```
+
+**Development:** Uses defaults if not set (`PORT=5000`, `CLIENT_URL=http://localhost:3000`)
+
+**Production:** Set `CLIENT_URL` to your Vercel frontend URL (e.g., `https://your-app.vercel.app`)
 
 ## Socket Events
 
@@ -60,11 +77,24 @@ npm run dev
 
 ## Deployment
 
-Ready for deployment on:
+### Render (Recommended)
+
+See `DEPLOYMENT.md` for detailed step-by-step instructions.
+
+**Quick Steps:**
+1. Push code to GitHub
+2. Create new Web Service on Render
+3. Set environment variables:
+   - `CLIENT_URL` = Your Vercel frontend URL
+   - `NODE_ENV` = `production`
+4. Deploy
+
+**Other Platforms:**
 - Railway
-- Render
 - Heroku
 - Any Node.js hosting platform
+
+**Note:** Make sure to set `CLIENT_URL` environment variable to your frontend URL for CORS to work correctly.
 
 ## License
 

@@ -4,11 +4,13 @@ const { Server } = require("socket.io");
 const cors = require('cors')
 
 const app = express();
-const isDev = app.settings.env === 'development';
-const URL = isDev ? 'http://localhost:3000' : 'https://doodle-swart.vercel.app/'
-app.use(cors({origin: URL}))
+const PORT = process.env.PORT || 5000;
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
+const NODE_ENV = process.env.NODE_ENV || 'development';
+
+app.use(cors({origin: CLIENT_URL}))
 const httpServer = createServer(app);
-const io = new Server(httpServer, { cors: URL });
+const io = new Server(httpServer, { cors: { origin: CLIENT_URL } });
 
 // Server-side room storage
 const roomCanvases = new Map();
@@ -76,4 +78,8 @@ io.on("connection", (socket) => {
     });
 });
 
-httpServer.listen(5000, console.log("Express Server running on port 5000"));
+httpServer.listen(PORT, () => {
+    console.log(`Express Server running on port ${PORT}`);
+    console.log(`Environment: ${NODE_ENV}`);
+    console.log(`CORS enabled for: ${CLIENT_URL}`);
+});
